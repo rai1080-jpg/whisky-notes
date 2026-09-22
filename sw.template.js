@@ -22,17 +22,40 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+/** 画面表示(HTML)はネットワーク優先。オフラインのときだけキャッシュを使う */
+async function handleNavigation(request) {
+  try {
+    const fresh = await fetch(request);
+    const cache = await caches.open(CACHE);
+    cache.put('./index.html', fresh.clone());
+    return fresh;
+  } catch {
+    const cached = await caches.match('./index.html', { ignoreSearch: true });
+    // オフラインかつ未キャッシュのときは、ブラウザ標準のエラー表示に任せる
+    return cached ?? Response.error();
+  }
+}
+
+/** ファイル名にハッシュが入る資産はキャッシュ優先。無ければ取得してキャッシュに足す */
+async function handleAsset(request) {
+  const cached = await caches.match(request, { ignoreSearch: true });
+  if (cached) return cached;
+  const response = await fetch(request);
+  if (response.ok && response.type === 'basic') {
+    const cache = await caches.open(CACHE);
+    cache.put(request, response.clone());
+  }
+  return response;
+}
+
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   if (request.method !== 'GET') return;
   if (new URL(request.url).origin !== self.location.origin) return;
 
-  event.respondWith(
-    caches.match(request, { ignoreSearch: true }).then((hit) => {
-      if (hit) return hit;
-      // 画面遷移はハッシュルーティングなので常にアプリ本体(index.html)を返す
-      if (request.mode === 'navigate') return caches.match('./index.html');
-      return fetch(request);
-    }),
-  );
+  /*
+   * HTML をキャッシュ優先にすると、更新直後に「古い HTML が、すでに消えた
+   * 古い JS を読みに行く」状態が起きて画面が真っ白になる。そのため分けている。
+   */
+  event.respondWith(request.mode === 'navigate' ? handleNavigation(request) : handleAsset(request));
 });

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { GlassIcon } from '../components/GlassIcon';
 import { PageHeader } from '../components/PageHeader';
 import { StarDisplay } from '../components/StarRating';
 import { formatDateShort, formatPrice, type Whisky } from '../model';
@@ -140,9 +141,7 @@ export function ListPage({ whiskies, ready, state, onStateChange, onLeave }: Pro
                       {w.photos[0] ? (
                         <img src={w.photos[0]} alt="" loading="lazy" />
                       ) : (
-                        <span className="card-noimg" aria-hidden="true">
-                          🥃
-                        </span>
+                        <GlassIcon className="card-noimg" />
                       )}
                     </div>
                     <div className="card-body">

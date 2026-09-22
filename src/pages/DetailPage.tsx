@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { GlassIcon } from '../components/GlassIcon';
 import { LevelDisplay } from '../components/LevelGauge';
 import { PageHeader } from '../components/PageHeader';
 import { StarDisplay } from '../components/StarRating';
@@ -11,8 +12,8 @@ function Gallery({ photos, name }: { photos: string[]; name: string }) {
 
   if (photos.length === 0) {
     return (
-      <div className="gallery gallery-empty" aria-hidden="true">
-        🥃
+      <div className="gallery-empty">
+        <GlassIcon className="gallery-empty-icon" />
       </div>
     );
   }
