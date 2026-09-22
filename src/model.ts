@@ -46,7 +46,8 @@ export const AROMA_AXES: { key: keyof Aroma; label: string }[] = [
 
 export const LEVEL_LABELS = ['弱め', 'ふつう', '強め'] as const;
 
-export const MAX_PHOTOS = 4;
+/** 1銘柄あたりの写真の上限。保存先が IndexedDB になり容量に余裕ができたため増やしている */
+export const MAX_PHOTOS = 10;
 
 export const emptyTaste = (): Taste => ({ sweetness: 0, smokiness: 0, body: 0 });
 export const emptyAroma = (): Aroma => ({ fruity: 0, spicy: 0, oak: 0 });

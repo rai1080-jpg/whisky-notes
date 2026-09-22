@@ -70,6 +70,7 @@ export function FormPage({ whisky, knownPlaces }: Props) {
   const [draft, setDraft] = useState(() => toDraft(whisky));
   const [nameError, setNameError] = useState('');
   const [saveError, setSaveError] = useState('');
+  const [saving, setSaving] = useState(false);
   const nameRef = useRef<HTMLInputElement>(null);
   const isEdit = whisky !== undefined;
   const backTo = isEdit ? paths.detail(whisky.id) : paths.list;
@@ -84,7 +85,7 @@ export function FormPage({ whisky, knownPlaces }: Props) {
   const setAroma = (key: keyof Aroma, v: Level) =>
     setDraft((d) => ({ ...d, aroma: { ...d.aroma, [key]: v } }));
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const name = draft.name.trim();
     if (!name) {
@@ -110,11 +111,16 @@ export function FormPage({ whisky, knownPlaces }: Props) {
       updatedAt: now,
     };
 
-    const result = upsertWhisky(record);
+    setSaving(true);
+    setSaveError('');
+    const result = await upsertWhisky(record);
     if (result.ok) {
       navigate(paths.detail(record.id), true);
-    } else if (result.reason === 'quota') {
-      setSaveError('ブラウザの保存容量がいっぱいで保存できませんでした。写真を減らすか、不要な記録を削除してください。');
+      return;
+    }
+    setSaving(false);
+    if (result.reason === 'quota') {
+      setSaveError('保存容量がいっぱいで保存できませんでした。写真を減らすか、不要な記録を削除してください。');
     } else {
       setSaveError('保存できませんでした。ブラウザの設定(プライベートモード等)をご確認ください。');
     }
@@ -261,8 +267,8 @@ export function FormPage({ whisky, knownPlaces }: Props) {
           <a className="btn" href={`#${backTo}`}>
             キャンセル
           </a>
-          <button type="submit" className="btn btn-primary">
-            保存する
+          <button type="submit" className="btn btn-primary" disabled={saving}>
+            {saving ? '保存中…' : '保存する'}
           </button>
         </div>
       </form>

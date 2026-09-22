@@ -1,9 +1,13 @@
-/** 長辺の上限(px)。ボトル写真は縦長が多いので、幅ではなく長辺で 800px に揃える */
-const MAX_SIDE = 800;
-/** data URL の目標文字数。localStorage(約5MB)を圧迫しないよう画質を下げて収める */
-const TARGET_CHARS = 90_000;
-const START_QUALITY = 0.75;
-const MIN_QUALITY = 0.4;
+/**
+ * 長辺の上限(px)。ボトル写真は縦長が多いので、幅ではなく長辺で揃える。
+ * 保存先が IndexedDB(端末の空き容量に応じて数百MB〜数GB)になったため、
+ * 旧版(localStorage・800px)より大きく、画質を保てる値にしている。
+ */
+const MAX_SIDE = 1600;
+/** data URL の目標文字数。1枚あたりおよそ300〜400KB程度を目安にする */
+const TARGET_CHARS = 500_000;
+const START_QUALITY = 0.85;
+const MIN_QUALITY = 0.5;
 
 interface Decoded {
   source: CanvasImageSource;
@@ -39,7 +43,7 @@ async function decode(file: File): Promise<Decoded> {
   }
 }
 
-/** 画像ファイルを長辺 800px の JPEG に縮小・圧縮して data URL で返す */
+/** 画像ファイルを長辺 {@link MAX_SIDE}px の JPEG に縮小・圧縮して data URL で返す */
 export async function fileToCompressedDataUrl(file: File): Promise<string> {
   const img = await decode(file);
   try {

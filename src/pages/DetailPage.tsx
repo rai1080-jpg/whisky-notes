@@ -40,12 +40,18 @@ function Gallery({ photos, name }: { photos: string[]; name: string }) {
 
 export function DetailPage({ whisky: w }: { whisky: Whisky }) {
   const [error, setError] = useState('');
+  const [deleting, setDeleting] = useState(false);
 
-  function handleDelete() {
+  async function handleDelete() {
     if (!window.confirm(`「${w.name}」の記録を削除しますか?\nこの操作は元に戻せません。`)) return;
-    const result = deleteWhisky(w.id);
-    if (result.ok) navigate(paths.list, true);
-    else setError('削除できませんでした。もう一度お試しください。');
+    setDeleting(true);
+    const result = await deleteWhisky(w.id);
+    if (result.ok) {
+      navigate(paths.list, true);
+      return;
+    }
+    setDeleting(false);
+    setError('削除できませんでした。もう一度お試しください。');
   }
 
   return (
@@ -103,8 +109,13 @@ export function DetailPage({ whisky: w }: { whisky: Whisky }) {
             {error}
           </p>
         )}
-        <button type="button" className="btn btn-danger btn-block" onClick={handleDelete}>
-          この記録を削除
+        <button
+          type="button"
+          className="btn btn-danger btn-block"
+          onClick={handleDelete}
+          disabled={deleting}
+        >
+          {deleting ? '削除中…' : 'この記録を削除'}
         </button>
       </main>
     </>

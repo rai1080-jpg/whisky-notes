@@ -1,7 +1,7 @@
 # ウイスキーノート
 
 ウイスキーのテイスティングノートを記録する PWA。React + TypeScript + Vite。
-データはブラウザの localStorage にのみ保存されます(バックエンドなし)。
+データはブラウザの IndexedDB にのみ保存されます(バックエンドなし)。
 
 ## 使い方
 
@@ -26,9 +26,11 @@ PWA としてはインストールできません(カメラ起動の `capture` �
 
 | パス | 内容 |
 | --- | --- |
-| `src/model.ts` | データモデル、評価軸の定義、localStorage 読込時の検証 |
-| `src/store.ts` | localStorage の読み書き(容量超過を検知して結果を返す) |
-| `src/image.ts` | 写真の縮小(長辺800px)・JPEG 圧縮 |
+| `src/model.ts` | データモデル、評価軸の定義、読込時の検証 |
+| `src/db.ts` | IndexedDB の薄いラッパー |
+| `src/store.ts` | 記録の読み書き。IndexedDB を優先し、使えない環境では localStorage にフォールバックする(容量超過を検知して結果を返す) |
+| `src/storageInfo.ts` | `navigator.storage` を使った保存容量の見積もり表示、永続化リクエスト |
+| `src/image.ts` | 写真の縮小(長辺1600px)・JPEG 圧縮 |
 | `src/router.ts` | ハッシュルーティング(`#/`, `#/new`, `#/whisky/:id`, `#/whisky/:id/edit`) |
 | `src/pages/` | 一覧・登録/編集・詳細 |
 | `sw.template.js` | Service Worker の雛形。ビルド時に全ファイルのプリキャッシュ一覧を埋めて `dist/sw.js` を生成 |
@@ -36,6 +38,12 @@ PWA としてはインストールできません(カメラ起動の `capture` �
 
 ## 保存容量について
 
-localStorage は約 5MB が上限です。写真は 1 枚あたり約 80KB 前後に圧縮しますが、
-写真を多く登録すると上限に達します。一覧画面の下部に使用量の目安を表示し、
+記録は IndexedDB に保存しており、上限は端末の空き容量に応じて動的に決まります
+(数百MB〜数GB程度になることが多いですが、ブラウザや端末により異なります)。
+写真は 1 枚あたり長辺1600px・おおむね数百KBに圧縮し、1銘柄につき最大10枚まで登録できます。
+一覧画面の下部に `navigator.storage.estimate()` による使用量の目安を表示し、
 上限に達して保存できない場合はフォームにエラーを表示します。
+
+IndexedDB が使えない環境(古いブラウザや一部のプライベートブラウジングモード)では、
+自動的に localStorage(約5MB)にフォールバックします。旧バージョン(localStorage のみ)で
+保存していたデータがあれば、初回起動時に自動で IndexedDB へ移行します。

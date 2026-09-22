@@ -1,9 +1,9 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { PageHeader } from '../components/PageHeader';
 import { StarDisplay } from '../components/StarRating';
 import { formatDateShort, formatPrice, type Whisky } from '../model';
 import { paths } from '../router';
-import { STORAGE_LIMIT_CHARS, usedChars } from '../store';
+import { formatBytes, getStorageInfo, type StorageInfo } from '../storageInfo';
 
 export type SortKey = 'date' | 'rating' | 'price';
 export type SortDir = 'asc' | 'desc';
@@ -48,13 +48,15 @@ function sortWhiskies(list: Whisky[], key: SortKey, dir: SortDir): Whisky[] {
 
 interface Props {
   whiskies: Whisky[];
+  /** 初回読み込み中(IndexedDB からの取得待ち)かどうか */
+  ready: boolean;
   state: ListState;
   onStateChange: (s: ListState) => void;
   /** 詳細へ移る直前に呼ぶ(戻ったときにスクロール位置を復元するため) */
   onLeave: () => void;
 }
 
-export function ListPage({ whiskies, state, onStateChange, onLeave }: Props) {
+export function ListPage({ whiskies, ready, state, onStateChange, onLeave }: Props) {
   const { query, sortKey, sortDir } = state;
   const option = SORT_OPTIONS.find((o) => o.key === sortKey)!;
 
@@ -64,7 +66,18 @@ export function ListPage({ whiskies, state, onStateChange, onLeave }: Props) {
     return sortWhiskies(filtered, sortKey, sortDir);
   }, [whiskies, query, sortKey, sortDir]);
 
-  const usage = usedChars() / STORAGE_LIMIT_CHARS;
+  const [storage, setStorage] = useState<StorageInfo | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    getStorageInfo().then((info) => {
+      if (!cancelled) setStorage(info);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [whiskies.length]);
+  const usagePct =
+    storage?.usageBytes != null && storage.quotaBytes ? storage.usageBytes / storage.quotaBytes : null;
 
   return (
     <>
@@ -106,7 +119,7 @@ export function ListPage({ whiskies, state, onStateChange, onLeave }: Props) {
           </div>
         )}
 
-        {whiskies.length === 0 ? (
+        {!ready ? null : whiskies.length === 0 ? (
           <div className="empty">
             <p className="empty-title">まだ記録がありません</p>
             <p>飲んだウイスキーの味・香り・感想を、1銘柄ずつ残しましょう。</p>
@@ -148,10 +161,13 @@ export function ListPage({ whiskies, state, onStateChange, onLeave }: Props) {
           </>
         )}
 
-        {whiskies.length > 0 && (
-          <p className={usage > 0.8 ? 'storage warn' : 'storage'}>
-            保存容量 {Math.round(usage * 100)}% 使用
-            {usage > 0.8 && '(いっぱいになると保存できなくなります。不要な写真を減らしてください)'}
+        {whiskies.length > 0 && storage?.usageBytes != null && (
+          <p className={usagePct !== null && usagePct > 0.8 ? 'storage warn' : 'storage'}>
+            保存容量 {formatBytes(storage.usageBytes)}
+            {storage.quotaBytes ? ` / ${formatBytes(storage.quotaBytes)} 使用` : ' 使用'}
+            {usagePct !== null &&
+              usagePct > 0.8 &&
+              '(いっぱいに近づいています。不要な写真を減らしてください)'}
           </p>
         )}
       </main>

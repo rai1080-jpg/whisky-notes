@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
+import { requestPersistentStorage } from './storageInfo';
 import './styles.css';
 
 createRoot(document.getElementById('root')!).render(
@@ -8,6 +9,9 @@ createRoot(document.getElementById('root')!).render(
     <App />
   </StrictMode>,
 );
+
+// 保存領域が(空き容量不足時などに)ブラウザに消されにくくなるよう頼んでおく
+requestPersistentStorage();
 
 // Service Worker は本番ビルドのみ(開発中はキャッシュが邪魔になるため)
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {

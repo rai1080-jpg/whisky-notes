@@ -1,7 +1,7 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { PageHeader } from './components/PageHeader';
 import { paths, useRoute } from './router';
-import { useWhiskies } from './store';
+import { useWhiskies, useWhiskiesReady } from './store';
 import { DetailPage } from './pages/DetailPage';
 import { FormPage } from './pages/FormPage';
 import { ListPage, type ListState } from './pages/ListPage';
@@ -26,6 +26,7 @@ function NotFound() {
 export default function App() {
   const route = useRoute();
   const whiskies = useWhiskies();
+  const ready = useWhiskiesReady();
 
   // 一覧の検索・並び替えは、詳細を見て戻っても保持する
   const [listState, setListState] = useState<ListState>({
@@ -47,6 +48,7 @@ export default function App() {
       return (
         <ListPage
           whiskies={whiskies}
+          ready={ready}
           state={listState}
           onStateChange={setListState}
           onLeave={() => {
