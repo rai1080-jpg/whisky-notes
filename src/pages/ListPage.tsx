@@ -94,7 +94,7 @@ export function ListPage({ whiskies, ready, state, onStateChange, onLeave }: Pro
   return (
     <>
       <PageHeader
-        title="ウイスキーノート"
+        title="Whisky Notes"
         actions={
           whiskies.length > 0 ? (
             <a className="btn btn-small" href={`#${paths.recommend}`} onClick={onLeave}>
@@ -170,7 +170,7 @@ export function ListPage({ whiskies, ready, state, onStateChange, onLeave }: Pro
         {!ready ? null : whiskies.length === 0 ? (
           <div className="empty">
             <p className="empty-title">まだ記録がありません</p>
-            <p>飲んだウイスキーの味・香り・感想を、1銘柄ずつ残しましょう。</p>
+            <p>飲んだ whisky の味・香り・感想を、1銘柄ずつ残しましょう。</p>
             <a className="btn btn-primary" href={`#${paths.new}`}>
               最初の1本を記録する
             </a>

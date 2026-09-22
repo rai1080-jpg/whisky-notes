@@ -1,7 +1,7 @@
 {
-  "name": "ウイスキーノート",
-  "short_name": "ウイスキー",
-  "description": "ウイスキーのテイスティングノートを記録するアプリ",
+  "name": "Whisky Notes",
+  "short_name": "Whisky",
+  "description": "whisky のテイスティングノートを記録するアプリ",
   "lang": "ja",
   "start_url": "./",
   "scope": "./",

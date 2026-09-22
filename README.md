@@ -1,6 +1,6 @@
-# ウイスキーノート
+# Whisky Notes
 
-ウイスキーのテイスティングノートを記録する PWA。React + TypeScript + Vite。
+whisky のテイスティングノートを記録する PWA。React + TypeScript + Vite。
 データはブラウザの IndexedDB にのみ保存されます(バックエンドなし)。
 
 ## 使い方
@@ -10,7 +10,7 @@ npm install
 npm run dev       # 開発サーバ(Service Worker は無効)
 npm run build     # 型チェック + 本番ビルド(dist/ に sw.js も生成)
 npm run preview   # ビルド結果の確認(PWA の動作確認はこちら)
-npm run icons     # PWA アイコンの再生成(scripts/make-icons.mjs)
+npm run icons     # PWA アイコンの再生成(scripts/make-icons.mjs / 20秒ほどかかります)
 ```
 
 ## スマホで試す / ホーム画面に追加する
@@ -37,6 +37,7 @@ PWA としてはインストールできません(カメラ起動の `capture` �
 | `src/pages/` | 一覧・登録/編集・詳細 |
 | `sw.template.js` | Service Worker の雛形。ビルド時に全ファイルのプリキャッシュ一覧を埋めて `dist/sw.js` を生成 |
 | `public/manifest.json` | Web App Manifest |
+| `scripts/make-icons.mjs` | アイコン生成。外部ライブラリを使わず、距離関数によるレイマーチングでグラスを描画している(屈折・全反射・液体の吸光・影・集光を近似) |
 
 ## 飲み方別の記録
 

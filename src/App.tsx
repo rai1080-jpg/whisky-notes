@@ -10,7 +10,7 @@ import { RecommendPage } from './pages/RecommendPage';
 function NotFound() {
   return (
     <>
-      <PageHeader title="ウイスキーノート" backTo={paths.list} />
+      <PageHeader title="Whisky Notes" backTo={paths.list} />
       <main className="page">
         <div className="empty">
           <p className="empty-title">ページが見つかりません</p>
