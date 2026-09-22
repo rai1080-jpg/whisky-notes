@@ -15,6 +15,22 @@ export interface Aroma {
   oak: Level;
 }
 
+export type DrinkStyleKey =
+  | 'straight'
+  | 'rocks'
+  | 'highball'
+  | 'mizuwari'
+  | 'oyuwari'
+  | 'twiceup'
+  | 'other';
+
+/** 飲み方ごとの記録。同じ銘柄でも飲み方で印象が変わるため、評価とメモを別に持つ */
+export interface DrinkRecord {
+  style: DrinkStyleKey;
+  rating: Stars;
+  memo: string;
+}
+
 export interface Whisky {
   id: string;
   name: string;
@@ -22,6 +38,7 @@ export interface Whisky {
   photos: string[];
   taste: Taste;
   aroma: Aroma;
+  drinks: DrinkRecord[];
   price: number | null;
   place: string;
   /** YYYY-MM-DD(ローカル日付)。未入力は空文字 */
@@ -45,6 +62,27 @@ export const AROMA_AXES: { key: keyof Aroma; label: string }[] = [
 ];
 
 export const LEVEL_LABELS = ['弱め', 'ふつう', '強め'] as const;
+
+export const DRINK_STYLES: { key: DrinkStyleKey; label: string }[] = [
+  { key: 'straight', label: 'ストレート' },
+  { key: 'rocks', label: 'ロック' },
+  { key: 'highball', label: 'ハイボール' },
+  { key: 'mizuwari', label: '水割り' },
+  { key: 'oyuwari', label: 'お湯割り' },
+  { key: 'twiceup', label: 'トワイスアップ' },
+  { key: 'other', label: 'その他' },
+];
+
+const DRINK_STYLE_KEYS = new Set<string>(DRINK_STYLES.map((s) => s.key));
+
+export const drinkStyleLabel = (key: DrinkStyleKey): string =>
+  DRINK_STYLES.find((s) => s.key === key)?.label ?? '';
+
+/** 表示順を DRINK_STYLES の並びに揃える */
+export const sortDrinks = (drinks: DrinkRecord[]): DrinkRecord[] =>
+  DRINK_STYLES.map((s) => drinks.find((d) => d.style === s.key)).filter(
+    (d): d is DrinkRecord => d !== undefined,
+  );
 
 /** 1銘柄あたりの写真の上限。保存先が IndexedDB になり容量に余裕ができたため増やしている */
 export const MAX_PHOTOS = 10;
@@ -110,6 +148,19 @@ export function normalizeWhisky(raw: unknown): Whisky | null {
       spicy: asLevel(aroma.spicy),
       oak: asLevel(aroma.oak),
     },
+    // 飲み方の記録は後から追加した項目なので、無い場合(旧データ)は空配列にする
+    drinks: Array.isArray(r.drinks)
+      ? r.drinks
+          .map(asRecord)
+          .filter((d) => typeof d.style === 'string' && DRINK_STYLE_KEYS.has(d.style))
+          .map((d) => ({
+            style: d.style as DrinkStyleKey,
+            rating: asStars(d.rating),
+            memo: asString(d.memo),
+          }))
+          // 同じ飲み方が重複していたら最初の1件だけ残す
+          .filter((d, i, arr) => arr.findIndex((x) => x.style === d.style) === i)
+      : [],
     price: typeof r.price === 'number' && Number.isFinite(r.price) && r.price >= 0 ? r.price : null,
     place: asString(r.place),
     date: asString(r.date),

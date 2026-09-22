@@ -1,7 +1,9 @@
 import { useMemo, useRef, useState, type FormEvent } from 'react';
+import { DrinkStyleEditor } from '../components/DrinkStyleEditor';
 import { LevelInput } from '../components/LevelGauge';
 import { PageHeader } from '../components/PageHeader';
 import { PhotoPicker } from '../components/PhotoPicker';
+import { SectionTitle } from '../components/SectionTitle';
 import { StarInput } from '../components/StarRating';
 import {
   AROMA_AXES,
@@ -9,8 +11,10 @@ import {
   emptyAroma,
   emptyTaste,
   newId,
+  sortDrinks,
   todayLocal,
   type Aroma,
+  type DrinkRecord,
   type Level,
   type Stars,
   type Taste,
@@ -25,6 +29,7 @@ interface Draft {
   photos: string[];
   taste: Taste;
   aroma: Aroma;
+  drinks: DrinkRecord[];
   price: string;
   place: string;
   date: string;
@@ -39,6 +44,7 @@ function toDraft(w: Whisky | undefined): Draft {
       photos: [],
       taste: emptyTaste(),
       aroma: emptyAroma(),
+      drinks: [],
       price: '',
       place: '',
       date: todayLocal(),
@@ -51,6 +57,7 @@ function toDraft(w: Whisky | undefined): Draft {
     photos: w.photos,
     taste: w.taste,
     aroma: w.aroma,
+    drinks: w.drinks,
     price: w.price === null ? '' : String(w.price),
     place: w.place,
     date: w.date,
@@ -102,6 +109,7 @@ export function FormPage({ whisky, knownPlaces }: Props) {
       photos: draft.photos,
       taste: draft.taste,
       aroma: draft.aroma,
+      drinks: sortDrinks(draft.drinks).map((d) => ({ ...d, memo: d.memo.trim() })),
       price: Number.isFinite(priceNum) && priceNum >= 0 ? Math.round(priceNum) : null,
       place: draft.place.trim(),
       date: draft.date,
@@ -157,12 +165,12 @@ export function FormPage({ whisky, knownPlaces }: Props) {
         </section>
 
         <section className="panel">
-          <h2 className="section-title">ボトル写真</h2>
+          <SectionTitle en="PHOTOS" ja="ボトル写真" />
           <PhotoPicker photos={draft.photos} onChange={(p) => set('photos', p)} />
         </section>
 
         <section className="panel">
-          <h2 className="section-title">味の特徴</h2>
+          <SectionTitle en="TASTE" ja="味の特徴" />
           {TASTE_AXES.map((a) => (
             <LevelInput
               key={a.key}
@@ -175,7 +183,7 @@ export function FormPage({ whisky, knownPlaces }: Props) {
         </section>
 
         <section className="panel">
-          <h2 className="section-title">香りの特徴</h2>
+          <SectionTitle en="AROMA" ja="香りの特徴" />
           {AROMA_AXES.map((a) => (
             <LevelInput
               key={a.key}
@@ -187,12 +195,20 @@ export function FormPage({ whisky, knownPlaces }: Props) {
         </section>
 
         <section className="panel">
-          <h2 className="section-title">総合評価</h2>
+          <SectionTitle en="SERVE" ja="飲み方別の記録" />
+          <DrinkStyleEditor
+            drinks={draft.drinks}
+            onChange={(update) => setDraft((d) => ({ ...d, drinks: update(d.drinks) }))}
+          />
+        </section>
+
+        <section className="panel">
+          <SectionTitle en="RATING" ja="総合評価" />
           <StarInput value={draft.rating} onChange={(v) => set('rating', v)} label="総合評価" />
         </section>
 
         <section className="panel">
-          <h2 className="section-title">飲んだときの情報</h2>
+          <SectionTitle en="DETAILS" ja="飲んだときの情報" />
 
           <label className="label" htmlFor="price">
             価格
@@ -244,14 +260,13 @@ export function FormPage({ whisky, knownPlaces }: Props) {
         </section>
 
         <section className="panel">
-          <label className="section-title" htmlFor="memo">
-            メモ
-          </label>
+          <SectionTitle en="NOTES" ja="メモ" />
           <textarea
             id="memo"
             className="field"
             rows={5}
             placeholder="第一印象、余韻、合わせた料理など"
+            aria-label="メモ"
             value={draft.memo}
             onChange={(e) => set('memo', e.target.value)}
           />

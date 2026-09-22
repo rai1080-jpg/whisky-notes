@@ -33,6 +33,7 @@ export default function App() {
     query: '',
     sortKey: 'date',
     sortDir: 'desc',
+    drinkStyle: 'all',
   });
   const listScroll = useRef(0);
 

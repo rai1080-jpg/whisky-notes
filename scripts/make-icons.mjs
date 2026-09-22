@@ -60,17 +60,17 @@ const inGlass = (x, y, inset) =>
 const sample = (x, y) => {
   // 背景: ほぼ無彩色の暗い面に、上からごく淡い光を落とす(アプリ本体の配色に合わせる)
   const d = Math.hypot(x - 0.5, y - 0.1);
-  let c = mix([0x1c, 0x1c, 0x1f], [0x0a, 0x0a, 0x0b], clamp01(d / 0.95));
+  let c = mix([0x23, 0x24, 0x27], [0x15, 0x16, 0x18], clamp01(d / 0.95));
 
   if (inGlass(x, y, 0)) {
-    c = over(c, [0xed, 0xed, 0xf0], 0.07); // ガラス本体
+    c = over(c, [0xec, 0xea, 0xe4], 0.06); // ガラス本体
     const surface = G.top + 0.11;
     if (y >= surface && inGlass(x, y, G.rim)) {
       const t = clamp01((y - surface) / (G.bottom - surface));
-      c = mix([0xe0, 0xb5, 0x79], [0xa8, 0x7b, 0x42], t); // 真鍮色の液面 → 底
+      c = mix([0xe3, 0xd7, 0xa4], [0xa8, 0x9c, 0x6c], t); // 淡い金の液面 → 底
     }
-    if (y > G.bottom - G.base * 2.4) c = over(c, [0xed, 0xed, 0xf0], 0.16); // 厚い底
-    if (!inGlass(x, y, G.rim)) c = mix(c, [0xc9, 0xc9, 0xd0], 0.8); // 縁
+    if (y > G.bottom - G.base * 2.4) c = over(c, [0xec, 0xea, 0xe4], 0.15); // 厚い底
+    if (!inGlass(x, y, G.rim)) c = mix(c, [0xd8, 0xd5, 0xcb], 0.8); // 縁
     // ハイライト
     const hx = 0.5 - halfWidth(y) + 0.045;
     if (Math.abs(x - hx) < 0.011 && y > G.top + 0.05 && y < G.bottom - 0.09) {

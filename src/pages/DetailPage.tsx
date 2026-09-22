@@ -2,8 +2,17 @@ import { useState } from 'react';
 import { GlassIcon } from '../components/GlassIcon';
 import { LevelDisplay } from '../components/LevelGauge';
 import { PageHeader } from '../components/PageHeader';
+import { SectionTitle } from '../components/SectionTitle';
 import { StarDisplay } from '../components/StarRating';
-import { AROMA_AXES, TASTE_AXES, formatDate, formatPrice, type Whisky } from '../model';
+import {
+  AROMA_AXES,
+  TASTE_AXES,
+  drinkStyleLabel,
+  formatDate,
+  formatPrice,
+  sortDrinks,
+  type Whisky,
+} from '../model';
 import { navigate, paths } from '../router';
 import { deleteWhisky } from '../store';
 
@@ -75,21 +84,40 @@ export function DetailPage({ whisky: w }: { whisky: Whisky }) {
         </section>
 
         <section className="panel">
-          <h3 className="section-title">味の特徴</h3>
+          <SectionTitle en="TASTE" ja="味の特徴" level={3} />
           {TASTE_AXES.map((a) => (
             <LevelDisplay key={a.key} label={a.label} value={w.taste[a.key]} />
           ))}
         </section>
 
         <section className="panel">
-          <h3 className="section-title">香りの特徴</h3>
+          <SectionTitle en="AROMA" ja="香りの特徴" level={3} />
           {AROMA_AXES.map((a) => (
             <LevelDisplay key={a.key} label={a.label} value={w.aroma[a.key]} />
           ))}
         </section>
 
         <section className="panel">
-          <h3 className="section-title">基本情報</h3>
+          <SectionTitle en="SERVE" ja="飲み方別の記録" level={3} />
+          {w.drinks.length === 0 ? (
+            <p className="hint">飲み方の記録はありません</p>
+          ) : (
+            <ul className="serve-list">
+              {sortDrinks(w.drinks).map((d) => (
+                <li key={d.style} className="serve-item">
+                  <div className="serve-head">
+                    <span className="serve-name">{drinkStyleLabel(d.style)}</span>
+                    <StarDisplay value={d.rating} size="sm" />
+                  </div>
+                  {d.memo && <p className="serve-memo">{d.memo}</p>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section className="panel">
+          <SectionTitle en="DETAILS" ja="基本情報" level={3} />
           <dl className="info">
             <dt>価格</dt>
             <dd>{formatPrice(w.price) || '—'}</dd>
@@ -101,7 +129,7 @@ export function DetailPage({ whisky: w }: { whisky: Whisky }) {
         </section>
 
         <section className="panel">
-          <h3 className="section-title">メモ</h3>
+          <SectionTitle en="NOTES" ja="メモ" level={3} />
           {w.memo ? <p className="memo">{w.memo}</p> : <p className="hint">メモはありません</p>}
         </section>
 

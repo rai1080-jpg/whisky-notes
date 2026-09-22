@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { GlassIcon } from '../components/GlassIcon';
 import { PageHeader } from '../components/PageHeader';
 import { StarDisplay } from '../components/StarRating';
-import { formatDateShort, formatPrice, type Whisky } from '../model';
+import { DRINK_STYLES, formatDateShort, formatPrice, type DrinkStyleKey, type Whisky } from '../model';
 import { paths } from '../router';
 import { formatBytes, getStorageInfo, type StorageInfo } from '../storageInfo';
 
@@ -12,6 +12,8 @@ export interface ListState {
   query: string;
   sortKey: SortKey;
   sortDir: SortDir;
+  /** 'all' なら絞り込みなし */
+  drinkStyle: DrinkStyleKey | 'all';
 }
 
 const SORT_OPTIONS: { key: SortKey; label: string; desc: string; asc: string }[] = [
@@ -58,14 +60,23 @@ interface Props {
 }
 
 export function ListPage({ whiskies, ready, state, onStateChange, onLeave }: Props) {
-  const { query, sortKey, sortDir } = state;
+  const { query, sortKey, sortDir, drinkStyle } = state;
   const option = SORT_OPTIONS.find((o) => o.key === sortKey)!;
 
   const visible = useMemo(() => {
     const q = fold(query.trim());
-    const filtered = q ? whiskies.filter((w) => fold(w.name).includes(q)) : whiskies;
+    let filtered = q ? whiskies.filter((w) => fold(w.name).includes(q)) : whiskies;
+    if (drinkStyle !== 'all') {
+      filtered = filtered.filter((w) => w.drinks.some((d) => d.style === drinkStyle));
+    }
     return sortWhiskies(filtered, sortKey, sortDir);
-  }, [whiskies, query, sortKey, sortDir]);
+  }, [whiskies, query, sortKey, sortDir, drinkStyle]);
+
+  // 飲み方の絞り込みは、実際に記録がある飲み方だけを出す
+  const availableStyles = useMemo(
+    () => DRINK_STYLES.filter((s) => whiskies.some((w) => w.drinks.some((d) => d.style === s.key))),
+    [whiskies],
+  );
 
   const [storage, setStorage] = useState<StorageInfo | null>(null);
   useEffect(() => {
@@ -117,6 +128,33 @@ export function ListPage({ whiskies, ready, state, onStateChange, onLeave }: Pro
                 {sortDir === 'desc' ? '↓' : '↑'} {sortDir === 'desc' ? option.desc : option.asc}
               </button>
             </div>
+
+            {availableStyles.length > 0 && (
+              <ul className="chip-row" role="group" aria-label="飲み方で絞り込む">
+                <li>
+                  <button
+                    type="button"
+                    className={drinkStyle === 'all' ? 'chip on' : 'chip'}
+                    aria-pressed={drinkStyle === 'all'}
+                    onClick={() => onStateChange({ ...state, drinkStyle: 'all' })}
+                  >
+                    すべて
+                  </button>
+                </li>
+                {availableStyles.map((s) => (
+                  <li key={s.key}>
+                    <button
+                      type="button"
+                      className={drinkStyle === s.key ? 'chip on' : 'chip'}
+                      aria-pressed={drinkStyle === s.key}
+                      onClick={() => onStateChange({ ...state, drinkStyle: s.key })}
+                    >
+                      {s.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
 
@@ -129,7 +167,7 @@ export function ListPage({ whiskies, ready, state, onStateChange, onLeave }: Pro
             </a>
           </div>
         ) : visible.length === 0 ? (
-          <p className="empty">「{query.trim()}」に一致する銘柄はありません</p>
+          <p className="empty">条件に一致する銘柄はありません</p>
         ) : (
           <>
             <p className="count">{visible.length}件</p>
