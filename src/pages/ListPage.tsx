@@ -93,7 +93,16 @@ export function ListPage({ whiskies, ready, state, onStateChange, onLeave }: Pro
 
   return (
     <>
-      <PageHeader title="ウイスキーノート" />
+      <PageHeader
+        title="ウイスキーノート"
+        actions={
+          whiskies.length > 0 ? (
+            <a className="btn btn-small" href={`#${paths.recommend}`} onClick={onLeave}>
+              おすすめ
+            </a>
+          ) : undefined
+        }
+      />
       <main className="page">
         {whiskies.length > 0 && (
           <div className="toolbar">

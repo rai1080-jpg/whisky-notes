@@ -413,6 +413,94 @@ select.field {
 .chip:active {
   transform: scale(0.96);
 }
+/* 表示専用のチップ(押せない) */
+.chip-static {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text-3);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+/* ---------- おすすめ ---------- */
+.reco-lead {
+  margin: 0 0 14px;
+  font-size: 0.82rem;
+  color: var(--text-2);
+}
+.reco-style {
+  margin-left: 6px;
+  font-weight: 500;
+  color: var(--gold);
+}
+.reco-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.reco-item {
+  padding: 18px 0;
+  border-top: 1px solid var(--line);
+}
+.reco-item:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.reco-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.reco-name {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.02rem;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.05em;
+  color: var(--gold);
+}
+.reco-score {
+  flex: none;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+}
+.reco-meta {
+  margin: 5px 0 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--text-3);
+}
+.reco-note {
+  margin: 9px 0 0;
+  font-size: 0.85rem;
+  line-height: 1.8;
+  color: var(--text-2);
+}
+.reco-reason {
+  margin: 8px 0 0;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--gold);
+  opacity: 0.85;
+}
+.reco-styles {
+  margin-top: 11px;
+}
+.reco-disclaimer {
+  margin: 4px 0 0;
+  padding: 0 4px;
+  font-size: 0.72rem;
+  line-height: 1.85;
+  color: var(--text-3);
+}
 
 /* ---------- 一覧 ---------- */
 .toolbar {

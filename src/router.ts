@@ -4,6 +4,7 @@ import { useMemo, useSyncExternalStore } from 'react';
 export type Route =
   | { name: 'list' }
   | { name: 'new' }
+  | { name: 'recommend' }
   | { name: 'detail'; id: string }
   | { name: 'edit'; id: string }
   | { name: 'notfound' };
@@ -12,6 +13,7 @@ function parse(hash: string): Route {
   const parts = hash.replace(/^#/, '').split('/').filter(Boolean);
   if (parts.length === 0) return { name: 'list' };
   if (parts[0] === 'new' && parts.length === 1) return { name: 'new' };
+  if (parts[0] === 'recommend' && parts.length === 1) return { name: 'recommend' };
   if (parts[0] === 'whisky' && parts[1]) {
     const id = decodeURIComponent(parts[1]);
     if (parts.length === 2) return { name: 'detail', id };
@@ -39,6 +41,7 @@ export function navigate(path: string, replace = false): void {
 export const paths = {
   list: '/',
   new: '/new',
+  recommend: '/recommend',
   detail: (id: string) => `/whisky/${encodeURIComponent(id)}`,
   edit: (id: string) => `/whisky/${encodeURIComponent(id)}/edit`,
 };

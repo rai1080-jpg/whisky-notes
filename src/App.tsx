@@ -5,6 +5,7 @@ import { useWhiskies, useWhiskiesReady } from './store';
 import { DetailPage } from './pages/DetailPage';
 import { FormPage } from './pages/FormPage';
 import { ListPage, type ListState } from './pages/ListPage';
+import { RecommendPage } from './pages/RecommendPage';
 
 function NotFound() {
   return (
@@ -59,6 +60,8 @@ export default function App() {
       );
     case 'new':
       return <FormPage key="new" knownPlaces={knownPlaces} />;
+    case 'recommend':
+      return <RecommendPage whiskies={whiskies} />;
     case 'detail': {
       const w = whiskies.find((x) => x.id === route.id);
       return w ? <DetailPage key={w.id} whisky={w} /> : <NotFound />;
