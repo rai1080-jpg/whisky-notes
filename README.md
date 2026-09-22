@@ -19,8 +19,24 @@ Service Worker とホーム画面への追加(PWA のインストール)は **HT
 同じ Wi-Fi 上の `http://192.168.x.x:5173` で開いた場合、画面表示・入力・写真の選択/撮影は使えますが、
 PWA としてはインストールできません(カメラ起動の `capture` は HTTP でも動く想定ですが、機種によって異なるため実機で確認してください)。
 
-`dist/` を GitHub Pages / Netlify / Cloudflare Pages などの HTTPS ホスティングに置くのが手軽です
-(相対パスでビルドしているのでサブディレクトリ配信でも動作します)。
+## 公開(Vercel)
+
+GitHub の `main` に push すると、Vercel が自動でビルドして公開します。
+設定は [`vercel.json`](vercel.json) に入れてあるため、Vercel の画面で選ぶ項目はありません。
+
+| 項目 | 値 |
+| --- | --- |
+| Framework | Vite |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+
+`vercel.json` の `headers` では、配信時のキャッシュを次のように指定しています。
+
+- `sw.js`: 毎回サーバーへ確認する(長く固定すると更新が利用者に届かなくなるため)
+- `assets/*`: 1年間そのまま使い回す(ファイル名にハッシュが入るため、内容が変われば別名になる)
+
+相対パスでビルドしているので、Vercel 以外(Netlify / Cloudflare Pages / GitHub Pages)や
+サブディレクトリ配信でも、`dist/` をそのまま置けば動作します。
 
 ## 構成
 
