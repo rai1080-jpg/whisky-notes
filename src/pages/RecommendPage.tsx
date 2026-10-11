@@ -53,7 +53,7 @@ export function RecommendPage({ whiskies }: { whiskies: Whisky[] }) {
         ) : (
           <>
             <section className="panel">
-              <SectionTitle en="YOUR TASTE" ja="あなたの好み" />
+              <SectionTitle en="Your Taste" ja="あなたの好み" />
               <p className="reco-lead">
                 総合評価{FAVORITE_THRESHOLD}以上の{favorites.length}件から割り出した傾向です。
               </p>
@@ -70,7 +70,7 @@ export function RecommendPage({ whiskies }: { whiskies: Whisky[] }) {
             </section>
 
             <section className="panel">
-              <SectionTitle en="FOR YOU" ja="好みに近い銘柄" />
+              <SectionTitle en="For You" ja="好みに近い銘柄" />
               <ul className="reco-list">
                 {recommendations.map(({ item, score, matchedAxes, matchesStyle }) => (
                   <li key={item.id} className="reco-item">

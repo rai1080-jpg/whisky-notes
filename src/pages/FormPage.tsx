@@ -165,12 +165,12 @@ export function FormPage({ whisky, knownPlaces }: Props) {
         </section>
 
         <section className="panel">
-          <SectionTitle en="PHOTOS" ja="ボトル写真" />
+          <SectionTitle en="Photos" ja="ボトル写真" />
           <PhotoPicker photos={draft.photos} onChange={(p) => set('photos', p)} />
         </section>
 
         <section className="panel">
-          <SectionTitle en="TASTE" ja="味の特徴" />
+          <SectionTitle en="Taste" ja="味の特徴" />
           {TASTE_AXES.map((a) => (
             <LevelInput
               key={a.key}
@@ -183,7 +183,7 @@ export function FormPage({ whisky, knownPlaces }: Props) {
         </section>
 
         <section className="panel">
-          <SectionTitle en="AROMA" ja="香りの特徴" />
+          <SectionTitle en="Aroma" ja="香りの特徴" />
           {AROMA_AXES.map((a) => (
             <LevelInput
               key={a.key}
@@ -195,7 +195,7 @@ export function FormPage({ whisky, knownPlaces }: Props) {
         </section>
 
         <section className="panel">
-          <SectionTitle en="SERVE" ja="飲み方別の記録" />
+          <SectionTitle en="Serve" ja="飲み方別の記録" />
           <DrinkStyleEditor
             drinks={draft.drinks}
             onChange={(update) => setDraft((d) => ({ ...d, drinks: update(d.drinks) }))}
@@ -203,12 +203,12 @@ export function FormPage({ whisky, knownPlaces }: Props) {
         </section>
 
         <section className="panel">
-          <SectionTitle en="RATING" ja="総合評価" />
+          <SectionTitle en="Rating" ja="総合評価" />
           <StarInput value={draft.rating} onChange={(v) => set('rating', v)} label="総合評価" />
         </section>
 
         <section className="panel">
-          <SectionTitle en="DETAILS" ja="飲んだときの情報" />
+          <SectionTitle en="Details" ja="飲んだときの情報" />
 
           <label className="label" htmlFor="price">
             価格
@@ -260,7 +260,7 @@ export function FormPage({ whisky, knownPlaces }: Props) {
         </section>
 
         <section className="panel">
-          <SectionTitle en="NOTES" ja="メモ" />
+          <SectionTitle en="Notes" ja="メモ" />
           <textarea
             id="memo"
             className="field"

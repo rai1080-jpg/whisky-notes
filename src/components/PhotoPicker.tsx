@@ -64,7 +64,11 @@ export function PhotoPicker({ photos, onChange }: Props) {
           disabled={busy || full}
           onClick={() => cameraRef.current?.click()}
         >
-          📷 撮影する
+          <svg className="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 8.5h3.2l1.8-2.5h6l1.8 2.5H20V19H4z" />
+            <circle cx="12" cy="13" r="3.4" />
+          </svg>
+          撮影する
         </button>
         <button
           type="button"
@@ -72,7 +76,12 @@ export function PhotoPicker({ photos, onChange }: Props) {
           disabled={busy || full}
           onClick={() => libraryRef.current?.click()}
         >
-          🖼 写真を選ぶ
+          <svg className="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 5h16v14H4z" />
+            <path d="m4 16 5-5 4 4 2.5-2.5L20 17" />
+            <circle cx="15.5" cy="9" r="1.4" />
+          </svg>
+          写真を選ぶ
         </button>
       </div>
 

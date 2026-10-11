@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
+import { ArrowLink } from '../components/ArrowLink';
 import { GlassIcon } from '../components/GlassIcon';
 import { PageHeader } from '../components/PageHeader';
+import { SectionTitle } from '../components/SectionTitle';
 import { StarDisplay } from '../components/StarRating';
 import { DRINK_STYLES, formatDateShort, formatPrice, type DrinkStyleKey, type Whisky } from '../model';
 import { paths } from '../router';
@@ -97,13 +99,37 @@ export function ListPage({ whiskies, ready, state, onStateChange, onLeave }: Pro
         title="Whisky Notes"
         actions={
           whiskies.length > 0 ? (
-            <a className="btn btn-small" href={`#${paths.recommend}`} onClick={onLeave}>
+            <a className="text-link" href={`#${paths.recommend}`} onClick={onLeave}>
               おすすめ
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12h14M13.5 6.5 19 12l-5.5 5.5" />
+              </svg>
             </a>
           ) : undefined
         }
       />
       <main className="page">
+        {/* 記録があるときは写真を低くし、一覧まですぐ届くようにする */}
+        <section className={whiskies.length > 0 ? 'hero compact' : 'hero'}>
+          <div className="hero-photo">
+            <img src={`${import.meta.env.BASE_URL}images/hero.jpg`} alt="" />
+          </div>
+          <div className="hero-text">
+            <h2 className="hero-title">一杯の記憶を、残す。</h2>
+            <p className="hero-en">Keep the Taste of Every Dram</p>
+            <p className="hero-body">
+              香り、味わい、飲んだ場所。
+              <br />
+              その夜の一杯を、静かに書き留める。
+            </p>
+            {ready && whiskies.length === 0 && (
+              <ArrowLink href={`#${paths.new}`} label="最初の1本を記録する" />
+            )}
+          </div>
+        </section>
+
+        {whiskies.length > 0 && <SectionTitle en="Collection" ja="これまでの記録" />}
+
         {whiskies.length > 0 && (
           <div className="toolbar">
             <input
@@ -167,15 +193,8 @@ export function ListPage({ whiskies, ready, state, onStateChange, onLeave }: Pro
           </div>
         )}
 
-        {!ready ? null : whiskies.length === 0 ? (
-          <div className="empty">
-            <p className="empty-title">まだ記録がありません</p>
-            <p>飲んだ whisky の味・香り・感想を、1銘柄ずつ残しましょう。</p>
-            <a className="btn btn-primary" href={`#${paths.new}`}>
-              最初の1本を記録する
-            </a>
-          </div>
-        ) : visible.length === 0 ? (
+        {/* 記録が無いときは、上の写真の下にある「最初の1本を記録する」が入口になる */}
+        {!ready || whiskies.length === 0 ? null : visible.length === 0 ? (
           <p className="empty">条件に一致する銘柄はありません</p>
         ) : (
           <>
@@ -218,11 +237,13 @@ export function ListPage({ whiskies, ready, state, onStateChange, onLeave }: Pro
         )}
       </main>
 
-      <a className="fab" href={`#${paths.new}`} onClick={onLeave} aria-label="新しく記録する">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 5v14M5 12h14" />
-        </svg>
-      </a>
+      {whiskies.length > 0 && (
+        <a className="fab" href={`#${paths.new}`} onClick={onLeave} aria-label="新しく記録する">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+        </a>
+      )}
     </>
   );
 }

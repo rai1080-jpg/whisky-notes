@@ -18,7 +18,7 @@ export function PageHeader({ title, backTo, actions }: Props) {
           </svg>
         </a>
       )}
-      <h1 className="app-title">
+      <h1 className={backTo === undefined ? 'app-title brand' : 'app-title'}>
         {backTo === undefined && <GlassIcon className="brand-mark" />}
         <span>{title}</span>
       </h1>

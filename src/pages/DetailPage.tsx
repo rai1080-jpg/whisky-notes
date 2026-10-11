@@ -84,21 +84,21 @@ export function DetailPage({ whisky: w }: { whisky: Whisky }) {
         </section>
 
         <section className="panel">
-          <SectionTitle en="TASTE" ja="味の特徴" level={3} />
+          <SectionTitle en="Taste" ja="味の特徴" level={3} />
           {TASTE_AXES.map((a) => (
             <LevelDisplay key={a.key} label={a.label} value={w.taste[a.key]} />
           ))}
         </section>
 
         <section className="panel">
-          <SectionTitle en="AROMA" ja="香りの特徴" level={3} />
+          <SectionTitle en="Aroma" ja="香りの特徴" level={3} />
           {AROMA_AXES.map((a) => (
             <LevelDisplay key={a.key} label={a.label} value={w.aroma[a.key]} />
           ))}
         </section>
 
         <section className="panel">
-          <SectionTitle en="SERVE" ja="飲み方別の記録" level={3} />
+          <SectionTitle en="Serve" ja="飲み方別の記録" level={3} />
           {w.drinks.length === 0 ? (
             <p className="hint">飲み方の記録はありません</p>
           ) : (
@@ -117,7 +117,7 @@ export function DetailPage({ whisky: w }: { whisky: Whisky }) {
         </section>
 
         <section className="panel">
-          <SectionTitle en="DETAILS" ja="基本情報" level={3} />
+          <SectionTitle en="Details" ja="基本情報" level={3} />
           <dl className="info">
             <dt>価格</dt>
             <dd>{formatPrice(w.price) || '—'}</dd>
@@ -129,7 +129,7 @@ export function DetailPage({ whisky: w }: { whisky: Whisky }) {
         </section>
 
         <section className="panel">
-          <SectionTitle en="NOTES" ja="メモ" level={3} />
+          <SectionTitle en="Notes" ja="メモ" level={3} />
           {w.memo ? <p className="memo">{w.memo}</p> : <p className="hint">メモはありません</p>}
         </section>
 
