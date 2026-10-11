@@ -1,4 +1,5 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Intro } from './components/Intro';
 import { PageHeader } from './components/PageHeader';
 import { paths, useRoute } from './router';
 import { useWhiskies, useWhiskiesReady } from './store';
@@ -45,9 +46,10 @@ export default function App() {
 
   const knownPlaces = useMemo(() => whiskies.map((w) => w.place), [whiskies]);
 
+  let page;
   switch (route.name) {
     case 'list':
-      return (
+      page = (
         <ListPage
           whiskies={whiskies}
           ready={ready}
@@ -58,19 +60,32 @@ export default function App() {
           }}
         />
       );
+      break;
     case 'new':
-      return <FormPage key="new" knownPlaces={knownPlaces} />;
+      page = <FormPage key="new" knownPlaces={knownPlaces} />;
+      break;
     case 'recommend':
-      return <RecommendPage whiskies={whiskies} />;
+      page = <RecommendPage whiskies={whiskies} />;
+      break;
     case 'detail': {
       const w = whiskies.find((x) => x.id === route.id);
-      return w ? <DetailPage key={w.id} whisky={w} /> : <NotFound />;
+      page = w ? <DetailPage key={w.id} whisky={w} /> : <NotFound />;
+      break;
     }
     case 'edit': {
       const w = whiskies.find((x) => x.id === route.id);
-      return w ? <FormPage key={w.id} whisky={w} knownPlaces={knownPlaces} /> : <NotFound />;
+      page = w ? <FormPage key={w.id} whisky={w} knownPlaces={knownPlaces} /> : <NotFound />;
+      break;
     }
     case 'notfound':
-      return <NotFound />;
+      page = <NotFound />;
+      break;
   }
+
+  return (
+    <>
+      {page}
+      <Intro />
+    </>
+  );
 }
