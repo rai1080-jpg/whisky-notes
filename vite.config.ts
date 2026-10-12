@@ -27,7 +27,8 @@ function pwaServiceWorker(): Plugin {
       const outDir = resolve(config.root, config.build.outDir);
       const files = walk(outDir)
         .map((f) => relative(outDir, f).replace(/\\/g, '/'))
-        .filter((f) => f !== 'sw.js');
+        // ボトル写真は数が多いので先読みせず、表示したときにだけ保存する(sw の handleAsset)
+        .filter((f) => f !== 'sw.js' && !f.startsWith('bottles/'));
 
       const hash = createHash('sha256');
       for (const f of files) hash.update(f).update(readFileSync(join(outDir, f)));
