@@ -117,6 +117,7 @@ export function FormPage({ whisky, knownPlaces }: Props) {
       memo: draft.memo.trim(),
       createdAt: whisky?.createdAt ?? now,
       updatedAt: now,
+      levelScale: 5,
     };
 
     setSaving(true);

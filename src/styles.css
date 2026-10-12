@@ -817,7 +817,7 @@ select.field {
   color: var(--ink-3);
 }
 
-/* ---------- 3段階評価 ---------- */
+/* ---------- 5段階評価 ---------- */
 .level-row {
   display: flex;
   align-items: center;
@@ -830,7 +830,7 @@ select.field {
   letter-spacing: 0.1em;
   color: var(--ink-2);
 }
-/* 細い線で3つに区切った帯。選んだ段階だけ濃く塗る */
+/* 細い線で5つに区切った帯。選んだ段階だけ濃く塗る */
 .level-gauge {
   display: flex;
   flex: 1;
@@ -838,14 +838,18 @@ select.field {
 }
 .seg {
   flex: 1;
+  min-width: 0;
   min-height: 44px;
+  padding: 0 2px;
   border: 0;
   border-left: 1px solid var(--line);
   background: transparent;
   color: var(--ink-2);
   font-family: var(--font-jp);
-  font-size: 0.78rem;
-  letter-spacing: 0.1em;
+  /* 5つ並べても「やや強い」が1行に収まる大きさ */
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
   transition: background-color 0.2s var(--ease), color 0.2s var(--ease);
 }
 .seg:first-child {

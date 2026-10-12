@@ -1,6 +1,7 @@
 import { CATALOG, type CatalogItem } from './catalog';
 import {
   AROMA_AXES,
+  LEVEL_MAX,
   TASTE_AXES,
   type Aroma,
   type DrinkStyleKey,
@@ -24,6 +25,9 @@ const axisValue = (w: Whisky | CatalogItem, key: AxisKey): number =>
     ? w.taste[key]
     : w.aroma[key];
 
+/** 銘柄リストの目安値は3段階のままなので、記録と同じ5段階(1・3・5)に揃える */
+const catalogValue = (item: CatalogItem, key: AxisKey): number => axisValue(item, key) * 2 - 1;
+
 /** 好みの傾向。値を入力していない軸は持たない */
 export type Profile = Partial<Record<AxisKey, number>>;
 
@@ -46,7 +50,7 @@ export interface RecommendResult {
   recommendations: Recommendation[];
 }
 
-/** 4★以上の記録から、軸ごとの平均値(1〜3)を出す。未評価(0)は平均に入れない */
+/** 4★以上の記録から、軸ごとの平均値(1〜5)を出す。未評価(0)は平均に入れない */
 function buildProfile(favorites: Whisky[]): Profile {
   const profile: Profile = {};
   for (const { key } of AXES) {
@@ -104,18 +108,18 @@ export function recommend(whiskies: Whisky[]): RecommendResult {
   }
 
   const scored = CATALOG.filter((item) => !isAlreadyOwned(item, whiskies)).map((item) => {
-    const diffs = keys.map((k) => Math.abs(axisValue(item, k) - (profile[k] as number)));
+    const diffs = keys.map((k) => Math.abs(catalogValue(item, k) - (profile[k] as number)));
     // 二乗平均で距離を出す。1軸だけ大きく外れる銘柄を上位に出さないため
     const rms = Math.sqrt(diffs.reduce((a, d) => a + d * d, 0) / diffs.length);
-    const base = 1 - rms / 2; // 軸の幅は 1〜3 なので最大の差は 2
+    const base = 1 - rms / (LEVEL_MAX - 1); // 軸の幅は 1〜5 なので最大の差は 4
 
     const matchesStyle = favoriteStyle !== null && item.styles.includes(favoriteStyle);
     const score = Math.max(0, Math.min(1, base + (matchesStyle ? 0.04 : 0)));
 
-    // 差が小さく、かつ好みがはっきりしている(平均1.8以上)軸を「近い点」として挙げる
+    // 差が小さく、かつ好みがはっきりしている(平均2.6以上)軸を「近い点」として挙げる
     const matchedAxes = keys
       .map((k, i) => ({ key: k, diff: diffs[i], value: profile[k] as number }))
-      .filter((a) => a.diff <= 0.6 && a.value >= 1.8)
+      .filter((a) => a.diff <= 1.2 && a.value >= 2.6)
       .sort((a, b) => a.diff - b.diff)
       .slice(0, 2)
       .map((a) => a.key);

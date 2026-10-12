@@ -1,4 +1,4 @@
-import { LEVEL_LABELS, type Level } from '../model';
+import { LEVELS, LEVEL_LABELS, LEVEL_MAX, type Level } from '../model';
 
 interface InputProps {
   label: string;
@@ -6,7 +6,7 @@ interface InputProps {
   onChange: (v: Level) => void;
 }
 
-/** 3分割のゲージ。タップした段階まで満たされる。選択中をもう一度タップで未評価に戻る */
+/** 5分割のゲージ。タップした段階まで満たされる。選択中をもう一度タップで未評価に戻る */
 export function LevelInput({ label, value, onChange }: InputProps) {
   return (
     <div className="level-row">
@@ -14,7 +14,7 @@ export function LevelInput({ label, value, onChange }: InputProps) {
         {label}
       </span>
       <div className="level-gauge" role="group" aria-labelledby={`lv-${label}`}>
-        {([1, 2, 3] as const).map((n) => (
+        {LEVELS.map((n) => (
           <button
             key={n}
             type="button"
@@ -39,9 +39,9 @@ export function LevelDisplay({ label, value }: { label: string; value: Level }) 
       <div
         className="level-bars"
         role="img"
-        aria-label={value === 0 ? `${label} 未評価` : `${label} 3段階中${value}`}
+        aria-label={value === 0 ? `${label} 未評価` : `${label} ${LEVEL_MAX}段階中${value}`}
       >
-        {[1, 2, 3].map((n) => (
+        {LEVELS.map((n) => (
           <span key={n} className={n <= value ? 'bar on' : 'bar'} />
         ))}
       </div>

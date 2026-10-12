@@ -4,11 +4,11 @@ import { SectionTitle } from '../components/SectionTitle';
 import { BOTTLE_PHOTOS, BOTTLE_SHAPES } from '../bottles';
 import { PRICE_BAND_LABELS } from '../catalog';
 import { BottleArt } from '../components/BottleArt';
-import { drinkStyleLabel, type DrinkStyleKey, type Whisky } from '../model';
+import { LEVELS, LEVEL_MAX, drinkStyleLabel, type DrinkStyleKey, type Whisky } from '../model';
 import { paths } from '../router';
 import { AXES, FAVORITE_THRESHOLD, axisLabel, recommend, type Recommendation } from '../recommend';
 
-/** 好みの平均値(小数)を、3分割のバーと数値で表す */
+/** 好みの平均値(小数)を、5分割のバーと数値で表す */
 function ProfileRow({ label, value }: { label: string; value: number }) {
   return (
     <div className="level-row">
@@ -16,9 +16,9 @@ function ProfileRow({ label, value }: { label: string; value: number }) {
       <div
         className="level-bars"
         role="img"
-        aria-label={`${label} 3段階中およそ${value.toFixed(1)}`}
+        aria-label={`${label} ${LEVEL_MAX}段階中およそ${value.toFixed(1)}`}
       >
-        {[1, 2, 3].map((n) => (
+        {LEVELS.map((n) => (
           <span key={n} className={n <= Math.round(value) ? 'bar on' : 'bar'} />
         ))}
       </div>

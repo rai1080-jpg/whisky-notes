@@ -1,5 +1,7 @@
-/** 3段階評価。0 は「未評価」 */
-export type Level = 0 | 1 | 2 | 3;
+/** 味・香りの5段階評価。0 は「未評価」 */
+export type Level = 0 | 1 | 2 | 3 | 4 | 5;
+/** 味・香りの段階数 */
+export const LEVEL_MAX = 5;
 /** 5段階の星。0 は「未評価」 */
 export type Stars = 0 | 1 | 2 | 3 | 4 | 5;
 
@@ -47,6 +49,11 @@ export interface Whisky {
   memo: string;
   createdAt: number;
   updatedAt: number;
+  /**
+   * 味・香りが何段階の値か。以前は3段階で、この項目が無い記録は3段階として読み替える。
+   * 読み替えた値は、次に編集・保存したときに5段階として保存される
+   */
+  levelScale: 5;
 }
 
 export const TASTE_AXES: { key: keyof Taste; label: string }[] = [
@@ -61,7 +68,8 @@ export const AROMA_AXES: { key: keyof Aroma; label: string }[] = [
   { key: 'oak', label: '樽香の強さ' },
 ];
 
-export const LEVEL_LABELS = ['弱め', 'ふつう', '強め'] as const;
+export const LEVEL_LABELS = ['弱い', 'やや弱い', 'ふつう', 'やや強い', '強い'] as const;
+export const LEVELS = [1, 2, 3, 4, 5] as const;
 
 export const DRINK_STYLES: { key: DrinkStyleKey; label: string }[] = [
   { key: 'straight', label: 'ストレート' },
@@ -117,7 +125,10 @@ export const formatPrice = (price: number | null): string =>
 
 // ---- localStorage から読んだ値の検証 ----
 
-const asLevel = (v: unknown): Level => (v === 1 || v === 2 || v === 3 ? v : 0);
+const asLevel5 = (v: unknown): Level =>
+  v === 1 || v === 2 || v === 3 || v === 4 || v === 5 ? v : 0;
+/** 旧3段階の値(弱め・ふつう・強め)を、5段階の両端と真ん中(1・3・5)に置き換える */
+const asLevel3 = (v: unknown): Level => (v === 1 ? 1 : v === 2 ? 3 : v === 3 ? 5 : 0);
 const asStars = (v: unknown): Stars =>
   v === 1 || v === 2 || v === 3 || v === 4 || v === 5 ? v : 0;
 const asString = (v: unknown): string => (typeof v === 'string' ? v : '');
@@ -132,6 +143,7 @@ export function normalizeWhisky(raw: unknown): Whisky | null {
   const taste = asRecord(r.taste);
   const aroma = asRecord(r.aroma);
   const now = Date.now();
+  const asLevel = r.levelScale === 5 ? asLevel5 : asLevel3;
   return {
     id: asString(r.id) || newId(),
     name,
@@ -168,5 +180,6 @@ export function normalizeWhisky(raw: unknown): Whisky | null {
     memo: asString(r.memo),
     createdAt: typeof r.createdAt === 'number' ? r.createdAt : now,
     updatedAt: typeof r.updatedAt === 'number' ? r.updatedAt : now,
+    levelScale: 5,
   };
 }
