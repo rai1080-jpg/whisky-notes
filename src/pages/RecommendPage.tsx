@@ -27,13 +27,25 @@ function ProfileRow({ label, value }: { label: string; value: number }) {
   );
 }
 
+/** Amazon の検索結果ページの URL。銘柄名だけだと関連商品が混ざるので種別の語を足す */
+function amazonSearchUrl(name: string): string {
+  return `https://www.amazon.co.jp/s?k=${encodeURIComponent(`${name} ウイスキー`)}`;
+}
+
 /** おすすめ1件分。左にボトル(写真か線画)、右に説明 */
 function RecoCard({ rec, favoriteStyle }: { rec: Recommendation; favoriteStyle: DrinkStyleKey | null }) {
   const { item, score, matchedAxes, matchesStyle } = rec;
   const photo = BOTTLE_PHOTOS[item.id];
+  const amazonUrl = amazonSearchUrl(item.name);
   return (
     <li className="reco-item">
-      <div className="reco-media">
+      <a
+        className="reco-media"
+        href={amazonUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`${item.name} を Amazon で探す`}
+      >
         {photo ? (
           <img
             src={`${import.meta.env.BASE_URL}${photo.src}`}
@@ -44,10 +56,14 @@ function RecoCard({ rec, favoriteStyle }: { rec: Recommendation; favoriteStyle: 
         ) : (
           <BottleArt shape={BOTTLE_SHAPES[item.id] ?? 'classic'} oak={item.aroma.oak} />
         )}
-      </div>
+      </a>
       <div className="reco-body">
         <div className="reco-head">
-          <h3 className="reco-name">{item.name}</h3>
+          <h3 className="reco-name">
+            <a href={amazonUrl} target="_blank" rel="noopener noreferrer">
+              {item.name}
+            </a>
+          </h3>
           <span className="reco-score">{Math.round(score * 100)}%</span>
         </div>
         <p className="reco-meta">
@@ -67,6 +83,15 @@ function RecoCard({ rec, favoriteStyle }: { rec: Recommendation; favoriteStyle: 
             </li>
           ))}
         </ul>
+        <a
+          className="btn btn-small reco-shop"
+          href={amazonUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Amazon で探す
+          <span aria-hidden="true">↗</span>
+        </a>
         {photo && (
           // 自由ライセンスの条件として、撮影者とライセンスを表示する
           <p className="reco-credit">
@@ -149,6 +174,7 @@ export function RecommendPage({ whiskies }: { whiskies: Whisky[] }) {
               価格帯もおおよその区分で、実際の価格は変動します。
               写真のラベルは撮影された時期のもので、現在の商品と異なる場合があります。
               写真の無い銘柄は、ボトルの形をイメージした絵で示しています。
+              銘柄名や写真をタップすると、Amazon の検索結果が開きます(このアプリとは関係のない外部サイトです)。
             </p>
           </>
         )}

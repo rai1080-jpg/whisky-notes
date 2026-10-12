@@ -1165,6 +1165,14 @@ select.field {
 .reco-styles {
   margin-top: 14px;
 }
+.reco-name a {
+  text-decoration: underline;
+  text-decoration-color: var(--line-2);
+  text-underline-offset: 5px;
+}
+.reco-shop {
+  margin-top: 16px;
+}
 .reco-disclaimer {
   margin: 8px 0 0;
   font-size: 0.72rem;
